@@ -32,8 +32,6 @@ sparks[] spark;
 
 
 
-
-
 void setup() {
 
   size(1200, 700);
@@ -120,7 +118,7 @@ class sparks {
       fill(170, 120, 100, 50);
       ellipse(posX, posY, 2, 2);
     }
-    posX += random(1, 3) * random(-1,1);
+    posX += random(1, 5) * random(-1,1);
     posY += flight;
 
   }
