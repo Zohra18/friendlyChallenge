@@ -37,6 +37,7 @@ sparks[] spark;
 
 //Images declaration
 PImage front_pump, back_pump, candle;
+PImage red_fire, orange_fire, yellow_fire;
 
 
 
@@ -62,6 +63,11 @@ void setup() {
   back_pump = loadImage("back_pump.png");
   candle = loadImage("candle.png");
 
+  red_fire = loadImage("red_fire.png");
+  orange_fire = loadImage("orange_fire.png");
+  yellow_fire = loadImage("yellow_fire.png");
+
+
   imageMode(CENTER);
   front_pump.resize(802/2, 488/2);
   back_pump.resize(802/2, 488/2);
@@ -71,7 +77,8 @@ void setup() {
   shapeMode(CENTER);
   rectMode(CENTER);
   ellipseMode(CENTER);
-
+  noStroke();            //No stroke on all shapes drawn
+  
   T = millis();
 }
 
@@ -118,28 +125,38 @@ void draw() {
 
       //Coordinates for the candle fire
       int flamme_x = width/2 +10;
-      int flamme_y = height/2+5;
+      int flamme_y = height/2+1;
 
       //Candle Fire
       //
+      //NOTE : the variable resize of the fire makes processing strugle with the png's for some reason.
+      //       After a few seconds, the fire is not an image but a square of one big orange pixel. Dunno why.
+      //
       //Outer candle fire (red)
-      fill(120, 30, 30, 190 + alpha);
-      noStroke();
-      ellipse(flamme_x, flamme_y-4, 15, 30);
+      tint(240, 180 + alpha);
+      //red_fire.resize(15 + (alpha*5/40), 25 + (alpha*5/40));
+      red_fire.resize(15,25);
+      image(red_fire, flamme_x, flamme_y);
 
       //Middle candle fire (orange)
-      fill(250, 100, 10, 190 + alpha);
-      noStroke();
-      ellipse(flamme_x, flamme_y-2, 8, 18);
+      tint(240, 190 + alpha);
+      //orange_fire.resize(15 + (alpha*5/40), 25 + (alpha*5/40));
+      orange_fire.resize(15,25);
+      image(orange_fire, flamme_x, flamme_y);
 
-      //Center candle fire (white)
-      fill(240, 220, 220, 180 + alpha);
-      noStroke();
-      ellipse(flamme_x, flamme_y, 4, 6);
+      //Center candle fire (yellow-ish)
+      tint(240, 180 + alpha);
+      //yellow_fire.resize(15 + (alpha*5/40), 25 + (alpha*5/40));
+      yellow_fire.resize(15,25);
+      image(yellow_fire, flamme_x, flamme_y);
 
       T = millis();
-    }
 
+      //FPS counter (not really useful, just to know if I'm abusing my computer that much ^^'
+      fill(255);
+      textSize(20);
+      text("fps :" + int (frameRate), 5, 25);
+    }
 
     //Calls the update function of the particles to update their locations (redraws them)
     for (int i=0; i<particles; i++) {
@@ -150,6 +167,8 @@ void draw() {
     //Drawing the pumpkin in front of everything   NOTE : Opacity is okay with PNGs and is just managed by Processing.
     tint(180);
     image(front_pump, width/2, height/2);
+    
+    
   } else { // The candle is not lit on !
     //We draw everything once and then actualize the particles to see them go off screen.
 
@@ -174,15 +193,8 @@ void draw() {
 
     //Drawing the pumpkin in front of everything   NOTE : Opacity is okay with PNGs and is just managed by Processing.
     tint(25);
-    image(front_pump, width/2, height/2);   
-
+    image(front_pump, width/2, height/2);
   }
-
-
-  //FPS counter (not really useful, just to know if I'm abusing my computer that much ^^'
-  fill(255);
-  textSize(20);
-  text("fps :" + int (frameRate), 5, 25);
 }
 
 
@@ -216,8 +228,17 @@ class sparks {
     posX += random(1, 5) * random(-1, 1);
     posY += flight;
   }
-} 
+}
 
+
+
+
+
+//
+/////////////////////////////////////////////////////////
+//
+// This function does things whenever a key is pressed (more accurately, when the keeyboard sends an input)
+//
 
 void keyPressed() {
   switch (key) {
