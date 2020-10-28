@@ -187,9 +187,20 @@ void draw() {
 
 
     //Calls the update function of the particles to update their locations (redraws them)
+    //They will stay out of the screen once they've reached the top
     for (int i=0; i<particles; i++) {
       spark[i].update();
     }
+    
+    //
+    //Need to create a smoke line doing some sine wave.
+    //The smoke could be some ellipses stacking up. No opacity, just gray colors.
+    //I was thinking about a big column of darker gray and a smaller column of lighter within the big one.
+    //The particles origin position depends on a sine value. The particles next position depends on this exact same function.
+    //So we can use the same function to declare their position, and only test for the height.
+    //Since it's a sin, it's periodic. You might try to slowly up the number of particles needed to do this effect.
+    //"lag reduction" lmao
+    //
 
     //Drawing the pumpkin in front of everything   NOTE : Opacity is okay with PNGs and is just managed by Processing.
     tint(25);
