@@ -159,10 +159,6 @@ void draw() {
 
       T = millis();
 
-      //FPS counter (not really useful, just to know if I'm abusing my computer that much ^^'
-      fill(255);
-      textSize(20);
-      text("fps :" + int (frameRate), 5, 25);
     }
 
     //Calls the update function of the particles to update their locations (redraws them)
@@ -218,6 +214,11 @@ void draw() {
     tint(25);
     image(front_pump, width/2, height/2);
   }
+  
+  //FPS counter (not really useful, just to know if I'm abusing my computer that much ^^'
+      fill(255);
+      textSize(20);
+      text("fps :" + int (frameRate), 5, 25);
 }
 
 
@@ -263,7 +264,7 @@ class sparks {
 class smoke { 
   float posX, posY, rank; 
   smoke (float i) {                   //Generates the values. The smoke will draw a sine wave on a straight vertical axis
-    posX = width/2 + 5*sin(((i)*2*PI/(smoke_quantity)));
+    posX = width/2 + 5*sin(((i)*2*PI/(smoke_quantity))); // Not a perfect sine. Need to adjust the small lateral uncontinuity that is linked to the -10 posY detection.
     posY = height/2-45;
     rank = i;
   } 
