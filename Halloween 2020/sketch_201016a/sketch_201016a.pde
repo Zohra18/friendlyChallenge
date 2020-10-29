@@ -27,15 +27,13 @@ int T;
 int timing = 80;
 
 //Quantity of fire particles when the fire is on
-int particles = 25, smoke_quantity = 350; //Smoke_quantity MUST be equal to height/2
-int height_smoke = width/2;
+int particles = 25;
 
 //Boolean used to stock the state of the candle fire (on / off)
 boolean light = true;
 
 //Particles declaration
 sparks[] spark;
-smoke[] smoke_part;
 
 //Images declaration
 PImage front_pump, back_pump, candle;
@@ -59,11 +57,6 @@ void setup() {
     spark[i] = new sparks();
   }
 
-  smoke_part = new smoke[smoke_quantity];
-
-  for (int i=0; i<smoke_quantity; i++) {
-    smoke_part[i] = new smoke(i);
-  }
 
   //Loading the Images;
   front_pump = loadImage("front_pump.png");
@@ -113,8 +106,8 @@ void draw() {
 
       //Draws ellipses on the ground (for no specific reason, it just looks cool)
 
-      fill(100, 100);
-      ellipse(width/2, height/2+70, 1150, 160);
+      fill(brightness, brightness, brightness, 100);
+      ellipse(width/2, height/2+70, 1000, 150);
 
       fill(brightness, 50);
       ellipse(width/2, height/2+70, 750, 100);
@@ -208,11 +201,6 @@ void draw() {
     //Since it's a sin, it's periodic. You might try to slowly up the number of particles needed to do this effect.
     //"lag reduction" lmao
     //
-    for (int i=0; i<smoke_quantity; i++) {
-      smoke_part[i].update();
-    }
-    height_smoke += 1;
-    
 
     //Drawing the pumpkin in front of everything   NOTE : Opacity is okay with PNGs and is just managed by Processing.
     tint(25);
@@ -221,16 +209,9 @@ void draw() {
 }
 
 
-//
-//
-//////////////////////////////////////////////////////////////////////////////
-//
-// Classes for sparks and smoke particles.
-//
-//
 
 class sparks { 
-  float posX, posY, flight;
+  float posX, posY, flight; 
   sparks () {     //Generates the values. The spark will only go in one direction, and flight at a random speed
     posX = width/2; 
     posY = height/2-45; 
@@ -260,36 +241,8 @@ class sparks {
   }
 }
 
-class smoke { 
-  float posX, posY, rank; 
-  smoke (float i) {                   //Generates the values. The smoke will draw a sine wave on a straight vertical axis
-    posX = width/2 + 5*sin(((i)*2*PI/(smoke_quantity)));
-    posY = height/2-45;
-    rank = i;
-  } 
 
 
-  void update() { //Changes the place of the smoke particles
-
-    if (posY <= -10) { // As there is no function to delete an instance within the class, we just reset the values so the particles start their path again from the candle
-      if (light) { //If the candle is on, then does not reset the position
-        posY = -10;
-      } else { // Otherwise resets the position and respects the path of the sine function
-               //!\ The particles do not have to appear and draw at the same time ! Otherwise they will be at the same height.
-               //To do that, I added a "rank" system. That way, since a particle will go upward one pixel at a time, we can simply know if it's time for it to move.
-        posY = height/2-45;
-      }
-    } else {
-      fill(70);
-      ellipse(posX, posY, 10, 10);
-      //fill(130);
-      //ellipse(posX, posY, 5, 5);
-    }
-    if(posY >= (height/2 - height_smoke) + rank){ // If the smoke_part is under the limit, then we have to move it up !
-      posY -= 1;
-    }
-  }
-}
 
 
 //
