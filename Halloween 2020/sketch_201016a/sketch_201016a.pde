@@ -21,14 +21,18 @@
  "Moving" jaw for the pupkin (or animated parts)
  
  */
+import processing.sound.*;
+
+//Sounds played when the candle is turned on/off
+SoundFile candle_on, candle_off;
 
 //Variables used for the candle fire actualisation (and everything that goes with it)
 int T;
 int timing = 80;
 
 //Quantity of fire particles when the fire is on
-int particles = 25, smoke_quantity = 350; //Smoke_quantity MUST be equal to height/2
-int height_smoke = width/2;
+int particles = 25, smoke_quantity = 350-45+10; //Smoke_quantity MUST be equal to height/2
+int height_smoke = width/2-45;
 
 //Boolean used to stock the state of the candle fire (on / off)
 boolean light = true;
@@ -52,6 +56,10 @@ void setup() {
   size(1200, 700);
   background(15);
 
+  //Loads the sound files
+  candle_on = new SoundFile(this, "candle_on.mp3");
+  candle_off = new SoundFile(this, "candle_off.mp3");
+  
   //Creating the sparks instances
   spark = new sparks[particles];
 
@@ -98,6 +106,8 @@ void draw() {
     //Candle light (ellipses)
     //Every so often, recalculates random values of 'alpha' and 'brightness' for the candle light.
     //This timing has been chosen so it seems more natural.
+    
+    
     if (millis() >= T  + timing) {    
 
       //Using the "background" here tells the program to erase everything on the screen.
@@ -195,20 +205,13 @@ void draw() {
       spark[i].update();
     }
     
-    //
-    //Need to create a smoke line doing some sine wave.
-    //The smoke could be some ellipses stacking up. No opacity, just gray colors.
-    //I was thinking about a big column of darker gray and a smaller column of lighter within the big one.
-    //The particles origin position depends on a sine value. The particles next position depends on this exact same function.
-    //So we can use the same function to declare their position, and only test for the height.
-    //Since it's a sin, it's periodic. You might try to slowly up the number of particles needed to do this effect.
-    //"lag reduction" lmao
-    //
+    //Thick smoke effect.
     for (int i=0; i<smoke_quantity; i++) {
       smoke_part[i].update();
     }
+    if(height_smoke > -10){ //This is the limit of the smoke. Starting from the candle to the top. It's capped at the top of the screen.
     height_smoke += 1;
-    
+    }
 
     //Drawing the pumpkin in front of everything   NOTE : Opacity is okay with PNGs and is just managed by Processing.
     tint(25);
@@ -261,10 +264,12 @@ class sparks {
   }
 }
 
+
+
 class smoke { 
   float posX, posY, rank; 
   smoke (float i) {                   //Generates the values. The smoke will draw a sine wave on a straight vertical axis
-    posX = width/2 + 5*sin(((i)*2*PI/(smoke_quantity))); // Not a perfect sine. Need to adjust the small lateral uncontinuity that is linked to the -10 posY detection.
+    posX = (width/2) +10 + 5*sin(((i)*2*PI/(smoke_quantity))); // Not a perfect sine. Need to adjust the small lateral uncontinuity that is linked to the -10 posY detection.
     posY = height/2-45;
     rank = i;
   } 
@@ -273,7 +278,12 @@ class smoke {
   void update() { //Changes the place of the smoke particles
 
     if (posY <= -10) { // As there is no function to delete an instance within the class, we just reset the values so the particles start their path again from the candle
-      if (light) { //If the candle is on, then does not reset the position
+      if (light) { //If the candle is on, then does not reset the position BUT resets the rank
+      if(posY <= -10){
+        posY = -10;
+      }else{
+        posY -= 1;
+      }
         posY = -10;
       } else { // Otherwise resets the position and respects the path of the sine function
                //!\ The particles do not have to appear and draw at the same time ! Otherwise they will be at the same height.
@@ -281,10 +291,8 @@ class smoke {
         posY = height/2-45;
       }
     } else {
-      fill(70);
-      ellipse(posX, posY, 10, 10);
-      //fill(130);
-      //ellipse(posX, posY, 5, 5);
+      fill(40);
+      ellipse(posX, posY, 4, 4);
     }
     if(posY >= (height/2 - height_smoke) + rank){ // If the smoke_part is under the limit, then we have to move it up !
       posY -= 1;
@@ -302,6 +310,12 @@ class smoke {
 void keyPressed() {
   switch (key) {
   case ' ':
+    if(light){ // If the candle was on, then plays the "candle_off" sound
+      candle_off.play();
+    }else
+    {
+      candle_on.play();
+    }
     light =! light;
     break;
 
